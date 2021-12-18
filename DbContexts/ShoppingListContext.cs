@@ -36,7 +36,8 @@ namespace ShoppingListAPI.DbContexts
             modelBuilder.Entity<ShoppingList>()
                 .HasOne(sl => sl.ListTag)
                 .WithMany(t => t.ShoppingLists)
-                .HasForeignKey(sl => sl.ListTagId);
+                .HasForeignKey(sl => sl.ListTagId)
+                .IsRequired(false);
         }
     }
 }

@@ -38,8 +38,8 @@ namespace ShoppingListAPI
             services.AddScoped<ITagRepository, TagRepository>();
             services.AddDbContext<ShoppingListContext>(options =>
             {
-                //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
-                options.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=ShoppingListDb;Trusted_Connection=True;MultipleActiveResultSets=true");
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+                //options.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=ShoppingListDb;Trusted_Connection=True;MultipleActiveResultSets=true");
             });
         }
 
