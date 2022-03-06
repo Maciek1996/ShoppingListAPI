@@ -27,8 +27,13 @@ namespace ShoppingListAPI.Profiles
 
             CreateMap<Models.TagCreationDto, Entities.Tag>();
             CreateMap<Models.TagEditionDto, Entities.Tag>();
-            CreateMap<Entities.Tag, Models.TagDto>().ReverseMap(); 
+            CreateMap<Entities.Tag, Models.TagDto>().ReverseMap();
+            CreateMap<Entities.ProductsList, Models.ProductListDto>().ForMember(dest => dest.Unit, opt => opt.MapFrom(src =>GetUnit(src))).ReverseMap();
+        }
 
+        private string GetUnit(Entities.ProductsList productsList)
+        {
+            return productsList?.Product?.Unit?.UnitCode;
         }
 
         private IEnumerable<Models.ProductListDto> GetList(Entities.ShoppingList Shoppinglist)
@@ -38,10 +43,14 @@ namespace ShoppingListAPI.Profiles
             foreach (var item in tmpList)
             {
                 var productList = new Models.ProductListDto();
-                productList.Id = item.ProductId;
+                productList.ProductId = item.ProductId;
                 productList.Name = item.Product.Name;
                 productList.Description = item.Product.Description;
                 productList.IsBought = item.IsBought;
+                productList.Type = item.Product.Type;
+                productList.Pieces = item.Pieces;
+                productList.Weight = item.Weight;
+                productList.Unit = GetUnit(item);
                 list.Add(productList);
             }
             return list;

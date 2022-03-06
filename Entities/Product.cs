@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ShoppingListAPI.Utilities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace ShoppingListAPI.Entities
         {
             Id = Guid.NewGuid();
             IsActive = true;
+            Type = QuantityType.None;
         }
 
         [Key]
@@ -19,6 +21,9 @@ namespace ShoppingListAPI.Entities
         public bool IsActive { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public QuantityType Type { get; set; }
+        public Guid? UnitId { get; set; }
+        public UnitOfMeasurement Unit { get; set; }
         public ICollection<ProductsList> ProductsList { get; set; } = new List<ProductsList>();
     }
 }

@@ -10,8 +10,8 @@ using ShoppingListAPI.DbContexts;
 namespace ShoppingListAPI.Migrations
 {
     [DbContext(typeof(ShoppingListContext))]
-    [Migration("20211031082819_Inital")]
-    partial class Inital
+    [Migration("20220122184422_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -36,7 +36,15 @@ namespace ShoppingListAPI.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("UnitId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UnitId");
 
                     b.ToTable("Products");
                 });
@@ -51,6 +59,12 @@ namespace ShoppingListAPI.Migrations
 
                     b.Property<bool>("IsBought")
                         .HasColumnType("bit");
+
+                    b.Property<int>("Pieces")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Weight")
+                        .HasColumnType("float");
 
                     b.HasKey("ProductId", "ShoppingListId");
 
@@ -95,6 +109,35 @@ namespace ShoppingListAPI.Migrations
                     b.ToTable("Tags");
                 });
 
+            modelBuilder.Entity("ShoppingListAPI.Entities.UnitOfMeasurement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UnitCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UnitName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Units");
+                });
+
+            modelBuilder.Entity("ShoppingListAPI.Entities.Product", b =>
+                {
+                    b.HasOne("ShoppingListAPI.Entities.UnitOfMeasurement", "Unit")
+                        .WithMany("Products")
+                        .HasForeignKey("UnitId");
+
+                    b.Navigation("Unit");
+                });
+
             modelBuilder.Entity("ShoppingListAPI.Entities.ProductsList", b =>
                 {
                     b.HasOne("ShoppingListAPI.Entities.Product", "Product")
@@ -136,6 +179,11 @@ namespace ShoppingListAPI.Migrations
             modelBuilder.Entity("ShoppingListAPI.Entities.Tag", b =>
                 {
                     b.Navigation("ShoppingLists");
+                });
+
+            modelBuilder.Entity("ShoppingListAPI.Entities.UnitOfMeasurement", b =>
+                {
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

@@ -19,6 +19,17 @@ namespace ShoppingListAPI.Services
 
         public void AddProduct(Product product)
         {
+            if (product.UnitId == null && product.Type == Utilities.QuantityType.Weight)
+            {
+                UnitOfMeasurement unit = _context.Units.Where(u => u.UnitCode == "kg").FirstOrDefault();
+                if (unit == null)
+                {
+                    _context.Units.Add(new UnitOfMeasurement { UnitName = "Kilogram", UnitCode = "kg" });
+                    _context.SaveChanges();
+                    unit = _context.Units.Where(u => u.UnitCode == "kg").FirstOrDefault();
+                }
+                product.Unit = unit;
+            }
             _context.Add(product);
             _context.SaveChanges();
         }
@@ -76,6 +87,17 @@ namespace ShoppingListAPI.Services
 
         public void UpdateProduct(Product product)
         {
+            if (product.UnitId == null && product.Type == Utilities.QuantityType.Weight)
+            {
+                UnitOfMeasurement unit = _context.Units.Where(u => u.UnitCode == "kg").FirstOrDefault();
+                if (unit == null)
+                {
+                    _context.Units.Add(new UnitOfMeasurement { UnitName = "Kilogram", UnitCode = "kg" });
+                    _context.SaveChanges();
+                    unit = _context.Units.Where(u => u.UnitCode == "kg").FirstOrDefault();
+                }
+                product.Unit = unit;
+            }
             _context.SaveChanges();
         }
     }

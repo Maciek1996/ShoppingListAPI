@@ -48,7 +48,7 @@ namespace ShoppingListAPI.Controllers
         [HttpPost("list")]
         public ActionResult<IEnumerable<ProductDto>> AddNewList([FromQuery] Guid? tagId)
         {
-            IEnumerable<Product> products;
+            IEnumerable<ProductsList> products;
             var result = _shoppingListRepository.CreateNewList(tagId, out products);
             if (result == Status.NotFound)
             {
@@ -61,7 +61,7 @@ namespace ShoppingListAPI.Controllers
 
             if (result == Status.Success)
             {
-                var list = _mapper.Map<IEnumerable<ProductDto>>(products).ToList();
+                var list = _mapper.Map<IEnumerable<ProductListDto>>(products).ToList();
                 return Created("", list);
             }
 
@@ -69,10 +69,10 @@ namespace ShoppingListAPI.Controllers
         }
 
         [HttpPut("list/{productId}")]
-        public IActionResult AddProductToList(Guid productId, [FromQuery] Guid? tagId )
+        public IActionResult AddProductToList(Guid productId, [FromQuery] Guid? tagId, [FromQuery] int pieces, [FromQuery] double weight )
         {
 
-            var result = _shoppingListRepository.AddProductToList(productId, tagId);
+            var result = _shoppingListRepository.AddProductToList(productId, tagId, pieces, weight);
             if (result == Status.NotFound)
             {
                 return NotFound();
@@ -105,9 +105,9 @@ namespace ShoppingListAPI.Controllers
         }
 
         [HttpPut("list")]
-        public IActionResult AddProductsToList([FromBody] IEnumerable<ProductDto> products, [FromQuery] Guid? tagId)
+        public IActionResult AddProductsToList([FromBody] IEnumerable<ProductListDto> products, [FromQuery] Guid? tagId)
         {
-            var list = _shoppingListRepository.AddMultipleProductsToList(_mapper.Map<IEnumerable<Product>>(products), tagId);
+            var list = _shoppingListRepository.AddMultipleProductsToList(_mapper.Map<IEnumerable<ProductsList>>(products), tagId);
             if (list == null)
             {
                 return NotFound();
@@ -116,10 +116,10 @@ namespace ShoppingListAPI.Controllers
             return Ok(_mapper.Map<ShoppingListDto>(list));
         }
 
-        [HttpPut("list/{ProductId}/{IsBought}")]
-        public IActionResult ChangeProductState(Guid ProductId, [FromQuery] Guid? tagId, bool IsBought)
+        [HttpPut("list/{ProductId}/state")]
+        public IActionResult ChangeProductState(Guid ProductId, [FromQuery] Guid? tagId, [FromQuery] bool? IsBought, [FromQuery] int? pieces, [FromQuery] double? weight)
         {
-            var result = _shoppingListRepository.ChangeProductState(ProductId, tagId, IsBought);
+            var result = _shoppingListRepository.ChangeProductState(ProductId, tagId, IsBought, pieces, weight);
             if (result == Status.NotFound)
             {
                 return NotFound();

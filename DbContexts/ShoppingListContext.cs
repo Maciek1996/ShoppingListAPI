@@ -17,6 +17,7 @@ namespace ShoppingListAPI.DbContexts
         public DbSet<ShoppingList> Lists { get; set; }
         public DbSet<ProductsList> ProductsList { get; set; }
         public DbSet<Tag> Tags { get; set; }
+        public DbSet<UnitOfMeasurement> Units { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -37,6 +38,11 @@ namespace ShoppingListAPI.DbContexts
                 .HasOne(sl => sl.ListTag)
                 .WithMany(t => t.ShoppingLists)
                 .HasForeignKey(sl => sl.ListTagId)
+                .IsRequired(false);
+            modelBuilder.Entity<Product>()
+                .HasOne(pr => pr.Unit)
+                .WithMany(u => u.Products)
+                .HasForeignKey(pr => pr.UnitId)
                 .IsRequired(false);
         }
     }

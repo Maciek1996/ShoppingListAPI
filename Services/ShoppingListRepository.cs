@@ -22,7 +22,7 @@ namespace ShoppingListAPI.Services
             _tagRepository = tagRepository;
         }
 
-        public ShoppingList AddMultipleProductsToList(IEnumerable<Product> products, Guid? tagId)
+        public ShoppingList AddMultipleProductsToList(IEnumerable<ProductsList> products, Guid? tagId)
         {
             var list = GetCurrentList(tagId);
             if (list == null)
@@ -30,16 +30,18 @@ namespace ShoppingListAPI.Services
                 return null;
             }
 
-            var productsIds = products.Select(p => p.Id).ToList();
+            var productsIds = products.Select(p => p.ProductId).ToList();
             var currentProductsIds = list.ProductsList.Select(pl => pl.ProductId).ToList();
             var availableProductsIds = _context.Products.Select(p => p.Id).ToList();
 
             List<Guid> Ids  = productsIds.Except(currentProductsIds).ToList();
             Ids = Ids.Intersect(availableProductsIds).ToList();
 
-            foreach (var productId in Ids)
+            var productsToAdd = products.Where(p=> Ids.Contains(p.ProductId)).ToList();
+
+            foreach (var product in productsToAdd)
             {
-                _context.ProductsList.Add(new ProductsList() { ShoppingListId = list.Id, ProductId = productId });
+                _context.ProductsList.Add(new ProductsList() { ShoppingListId = list.Id, ProductId = product.ProductId, Pieces = product.Pieces, Weight = product.Weight });
             }
 
             _context.SaveChanges();
@@ -48,7 +50,7 @@ namespace ShoppingListAPI.Services
             return list;
         }
 
-        public Status AddProductToList(Guid productId, Guid? tagId)
+        public Status AddProductToList(Guid productId, Guid? tagId, int pieces, double weight)
         {
             var list = GetCurrentList(tagId);
             if (list == null)
@@ -71,12 +73,41 @@ namespace ShoppingListAPI.Services
             }
 
             var newProductList = new ProductsList() { ProductId = productId, ShoppingListId = list.Id};
+            
+            if (existingProduct.Type == QuantityType.Piece)
+            {
+                if (pieces > 0)
+                {
+                    newProductList.Pieces = pieces;
+                }
+                else if (pieces == 0)
+                {
+                    newProductList.Pieces = 1;
+                }
+                else
+                {
+                    newProductList.Pieces = -1 * pieces;
+                }
+            }
+
+            if (existingProduct.Type == QuantityType.Weight)
+            {
+                if (weight > 0)
+                {
+                    newProductList.Weight = weight;
+                }
+                else if (weight < 0)
+                {
+                    newProductList.Weight = -1.0 * weight;
+                }
+            }
+
             _context.ProductsList.Add(newProductList);
             _context.SaveChanges();
             return Status.Success;
         }
 
-        public Status ChangeProductState(Guid productId, Guid? tagId, bool isBought)
+        public Status ChangeProductState(Guid productId, Guid? tagId, bool? isBought, int? pieces, double? weight)
         {
             var list = GetCurrentList(tagId);
 
@@ -86,17 +117,28 @@ namespace ShoppingListAPI.Services
                 return Status.NotFound;
             }
 
-            productList.IsBought = isBought;
+            if (isBought != null)
+            {
+                productList.IsBought = (bool)isBought;
+            }
+            if (pieces != null && productList.Product?.Type == QuantityType.Piece)
+            {
+                productList.Pieces = (int)pieces;
+            }
+            if (weight != null && productList.Product?.Type == QuantityType.Weight)
+            {
+                productList.Weight = (double)weight;
+            }
             _context.ProductsList.Attach(productList).State = EntityState.Modified;
             _context.SaveChanges();
             return Status.Success;
         }
 
-        public Status CreateNewList(Guid? tagId, out IEnumerable<Product> products)
+        public Status CreateNewList(Guid? tagId, out IEnumerable<ProductsList> products)
         {
             var list = GetCurrentList(tagId);
 
-            products = new List<Product>();
+            products = new List<ProductsList>();
             if (list == null)
             {
                 return Status.NotFound;
@@ -106,7 +148,7 @@ namespace ShoppingListAPI.Services
                 return Status.NoItems;
             }
 
-            products = list.ProductsList.Where(pl => pl.IsBought == false).Select(pl => pl.Product).ToList();
+            products = list.ProductsList.Where(pl => pl.IsBought == false).ToList();
             ShoppingList newList = new ShoppingList();
             newList.ListTagId = tagId;
             _context.Lists.Add(newList);
@@ -141,7 +183,7 @@ namespace ShoppingListAPI.Services
                 tag = _tagRepository.GetTag((Guid)tagId);
             }
             
-            var list = _context.Lists.Include(l=>l.ProductsList).ThenInclude(pl => pl.Product).OrderByDescending(l => l.CreationDate).Where(l => l.ListTagId== tagId).FirstOrDefault();
+            var list = _context.Lists.Include(l=>l.ProductsList).ThenInclude(pl => pl.Product).ThenInclude(p=>p.Unit).OrderByDescending(l => l.CreationDate).Where(l => l.ListTagId== tagId).FirstOrDefault();
 
             if (list == null)
             {
@@ -167,6 +209,13 @@ namespace ShoppingListAPI.Services
         {
             var lists = _context.Lists.Include(l => l.ListTag).Include(l => l.ProductsList).ThenInclude(pl => pl.Product).OrderByDescending(l => l.CreationDate).AsEnumerable();
             return lists;
+        }
+
+        public IEnumerable<UnitOfMeasurement> GetAllUnits()
+        {
+            var units = _context.Units.AsEnumerable();
+
+            return units;
         }
     }
 }
