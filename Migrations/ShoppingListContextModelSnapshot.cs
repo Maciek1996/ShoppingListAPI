@@ -61,6 +61,9 @@ namespace ShoppingListAPI.Migrations
                     b.Property<int>("Pieces")
                         .HasColumnType("int");
 
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
                     b.Property<double>("Weight")
                         .HasColumnType("float");
 

@@ -83,7 +83,8 @@ namespace ShoppingListAPI.Migrations
                     ShoppingListId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IsBought = table.Column<bool>(type: "bit", nullable: false),
                     Pieces = table.Column<int>(type: "int", nullable: false),
-                    Weight = table.Column<double>(type: "float", nullable: false)
+                    Weight = table.Column<double>(type: "float", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

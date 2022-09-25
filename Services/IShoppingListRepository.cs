@@ -17,7 +17,7 @@ namespace ShoppingListAPI.Services
 
         public Status DeleteProductFromList(Guid productId, Guid? tagId);
 
-        public Status ChangeProductState(Guid productId, Guid? tagId, bool? isBought, int? pieces, double? weight);
+        public Status ChangeProductState(Guid productId, Guid? tagId, bool? isBought, int? pieces, double? weight, QuantityType? type);
 
         public Status CreateNewList(Guid? tagId, out IEnumerable<ProductsList> products);
 

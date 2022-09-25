@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ShoppingListAPI.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ namespace ShoppingListAPI.Entities
         public bool IsBought { get; set; }
         public int Pieces { get; set; }
         public double Weight { get; set; }
+        public QuantityType Type { get; set; }
 
         public Guid ShoppingListId { get; set; }
         public ShoppingList ShoppingList { get; set; }

@@ -17,7 +17,7 @@ namespace ShoppingListAPI.Profiles
             CreateMap<Entities.ShoppingList, Models.ShoppingListDto>()
                 .ForMember(
                 dest => dest.CreationDate,
-                opt => opt.MapFrom(src => src.CreationDate.Date.ToShortDateString()))
+                opt => opt.MapFrom(src => src.CreationDate.ToString("dd.MM.yyyy HH:mm")))
                 .ForMember(
                 dest => dest.TagName,
                 opt => opt.MapFrom(src => src.ListTag != null ? src.ListTag.TagName : null))
@@ -47,7 +47,7 @@ namespace ShoppingListAPI.Profiles
                 productList.Name = item.Product.Name;
                 productList.Description = item.Product.Description;
                 productList.IsBought = item.IsBought;
-                productList.Type = item.Product.Type;
+                productList.Type = item.Type;
                 productList.Pieces = item.Pieces;
                 productList.Weight = item.Weight;
                 productList.Unit = GetUnit(item);

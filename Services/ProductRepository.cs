@@ -85,7 +85,7 @@ namespace ShoppingListAPI.Services
             return list;
         }
 
-        public void UpdateProduct(Product product)
+        public void UpdateProduct(Product product, bool changeTypeForAll)
         {
             if (product.UnitId == null && product.Type == Utilities.QuantityType.Weight)
             {
@@ -98,7 +98,20 @@ namespace ShoppingListAPI.Services
                 }
                 product.Unit = unit;
             }
+            _context.Entry(product).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
             _context.SaveChanges();
+
+            if (changeTypeForAll)
+            {
+                var productsList = _context.ProductsList.Where(p => p.ProductId == product.Id).ToList();
+                foreach (var item in productsList)
+                {
+                    _context.Attach(item);
+                    item.Type = product.Type;
+                    _context.SaveChanges();
+                }
+            }
+
         }
     }
 }

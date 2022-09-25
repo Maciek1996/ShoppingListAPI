@@ -59,7 +59,7 @@ namespace ShoppingListAPI.Controllers
         }
 
         [HttpPut("{productId}")]
-        public ActionResult UpdateProduct(Guid productId, ProductEditionDto product)
+        public ActionResult UpdateProduct(Guid productId, ProductEditionDto product, [FromQuery] bool? changeForAll)
         {
 
             var existingProduct = _repository.GetProduct(productId);
@@ -70,7 +70,8 @@ namespace ShoppingListAPI.Controllers
 
             _mapper.Map(product, existingProduct);
 
-            _repository.UpdateProduct(existingProduct);
+            var changeTypeForAll = changeForAll != null ? (bool)changeForAll : false;
+            _repository.UpdateProduct(existingProduct, changeTypeForAll);
 
             return NoContent();
         }

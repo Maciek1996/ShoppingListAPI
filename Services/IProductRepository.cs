@@ -16,7 +16,7 @@ namespace ShoppingListAPI.Services
 
         public IEnumerable<Product> GetProducts(string searchQuery);
 
-        public void UpdateProduct(Product product);
+        public void UpdateProduct(Product product, bool changeTypeForAll);
 
         public bool DeleteProduct(Guid productId);
 

@@ -117,9 +117,9 @@ namespace ShoppingListAPI.Controllers
         }
 
         [HttpPut("list/{ProductId}/state")]
-        public IActionResult ChangeProductState(Guid ProductId, [FromQuery] Guid? tagId, [FromQuery] bool? IsBought, [FromQuery] int? pieces, [FromQuery] double? weight)
+        public IActionResult ChangeProductState(Guid ProductId, [FromQuery] Guid? tagId, [FromQuery] bool? IsBought, [FromQuery] int? pieces, [FromQuery] double? weight, [FromQuery] QuantityType? type )
         {
-            var result = _shoppingListRepository.ChangeProductState(ProductId, tagId, IsBought, pieces, weight);
+            var result = _shoppingListRepository.ChangeProductState(ProductId, tagId, IsBought, pieces, weight, type);
             if (result == Status.NotFound)
             {
                 return NotFound();

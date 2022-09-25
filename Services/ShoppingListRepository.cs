@@ -41,7 +41,7 @@ namespace ShoppingListAPI.Services
 
             foreach (var product in productsToAdd)
             {
-                _context.ProductsList.Add(new ProductsList() { ShoppingListId = list.Id, ProductId = product.ProductId, Pieces = product.Pieces, Weight = product.Weight });
+                _context.ProductsList.Add(new ProductsList() { ShoppingListId = list.Id, ProductId = product.ProductId, Pieces = product.Pieces, Weight = product.Weight, Type = product.Type });
             }
 
             _context.SaveChanges();
@@ -72,7 +72,7 @@ namespace ShoppingListAPI.Services
                 return Status.Exists;
             }
 
-            var newProductList = new ProductsList() { ProductId = productId, ShoppingListId = list.Id};
+            var newProductList = new ProductsList() { ProductId = productId, ShoppingListId = list.Id, Type = existingProduct.Type};
             
             if (existingProduct.Type == QuantityType.Piece)
             {
@@ -107,7 +107,7 @@ namespace ShoppingListAPI.Services
             return Status.Success;
         }
 
-        public Status ChangeProductState(Guid productId, Guid? tagId, bool? isBought, int? pieces, double? weight)
+        public Status ChangeProductState(Guid productId, Guid? tagId, bool? isBought, int? pieces, double? weight, QuantityType? type)
         {
             var list = GetCurrentList(tagId);
 
@@ -121,11 +121,15 @@ namespace ShoppingListAPI.Services
             {
                 productList.IsBought = (bool)isBought;
             }
-            if (pieces != null && productList.Product?.Type == QuantityType.Piece)
+            if (type != null)
+            {
+                productList.Type = (QuantityType)type;
+            }
+            if (pieces != null && productList.Type == QuantityType.Piece)
             {
                 productList.Pieces = (int)pieces;
             }
-            if (weight != null && productList.Product?.Type == QuantityType.Weight)
+            if (weight != null && productList.Type == QuantityType.Weight)
             {
                 productList.Weight = (double)weight;
             }

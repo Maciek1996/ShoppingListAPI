@@ -10,7 +10,7 @@ using ShoppingListAPI.DbContexts;
 namespace ShoppingListAPI.Migrations
 {
     [DbContext(typeof(ShoppingListContext))]
-    [Migration("20220122184422_Initial")]
+    [Migration("20220409215728_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -61,6 +61,9 @@ namespace ShoppingListAPI.Migrations
                         .HasColumnType("bit");
 
                     b.Property<int>("Pieces")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
                         .HasColumnType("int");
 
                     b.Property<double>("Weight")
